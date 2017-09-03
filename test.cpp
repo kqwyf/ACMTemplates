@@ -1,43 +1,10 @@
-#include "stdalgo.cpp"
+#include <cstdio>
+#include <cstring>
+#include <queue>
 using namespace std;
 
-//Trie child starts from 0
-struct Trie
-{
-	static const int N=100005;
-	static const int M=26;
-	int root,cur,ch[N][M],end[N];
-	inline int newnode()
-	{
-		for(int i=0;i<M;i++)
-			ch[cur][i]=-1;
-		end[cur]=0;
-		return cur++;
-	}
-	inline void init()
-	{
-		cur=0;
-		root=newnode();
-	}
-	void insert(char s[])
-	{
-		int t=root;
-		for(int i=0,l=strlen(s);i<l;t=ch[t][s[i++]])
-			if(ch[t][s[i]]==-1)
-				ch[t][s[i]]=newnode();
-		end[t]++;
-	}
-	int query(char s[])
-	{
-		int t=root;
-		for(int i=0,l=strlen(s);t!=-1&&i<=l;t=ch[t][s[i++]])
-			if(i==l) return end[t];
-		return 0;
-	}
-};
 
-//AC automaton child starts from 0
-struct ACTrie
+template<typename T> struct ACTrie
 {
 	static const int N=500005;
 	static const int M=26;
@@ -54,15 +21,15 @@ struct ACTrie
 		cur=0;
 		root=newnode();
 	}
-	void insert(char s[])
+	void insert(T s[],int l)
 	{
 		int t=root;
-		for(int i=0,l=strlen(s);i<l;t=ch[t][s[i++]])
+		for(int i=0;i<l;t=ch[t][s[i++]])
 			if(ch[t][s[i]]==-1)
 				ch[t][s[i]]=newnode();
 		end[t]++;
 	}
-	void buildac()
+	void build()
 	{
 		queue<int> q;
 		fail[root]=root;
@@ -88,12 +55,43 @@ struct ACTrie
 				}
 		}
 	}
-	int query(char s[])
+	int query(T s[],int l)
 	{
 		int ans=0;
-		for(int t=root,i=0,l=strlen(s);i<=l;t=ch[t][s[i++]])
+		for(int t=root,i=0;i<=l;t=ch[t][s[i++]])
 			for(int tmp=t;tmp!=root;tmp=fail[tmp])
 				ans+=end[tmp],end[tmp]=0;
 		return ans;
 	}
 };
+
+ACTrie<char> trie;
+
+int n,m;
+
+char s[1000005];
+int main()
+{
+	int i,j,T,t;
+	scanf("%d",&T);
+	while(T--)
+	{
+		scanf("%d",&n);
+		trie.init();
+		while(n--)
+		{
+			scanf("%s",s);
+			m=strlen(s);
+			for(i=0;i<m;i++)
+				s[i]-='a';
+			trie.insert(s,m);
+		}
+		trie.build();
+		scanf("%s",s);
+		m=strlen(s);
+		for(i=0;i<m;i++)
+			s[i]-='a';
+		printf("%d\n",trie.query(s,m));
+	}
+	return 0;
+}
