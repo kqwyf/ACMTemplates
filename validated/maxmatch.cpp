@@ -57,3 +57,56 @@ int maxmatch() {
 	}
 	return ans;
 }
+
+//Kuhn Munkras (O(n^3))
+int w[N][N];
+int match[2][N], label[2][N], slack[N];
+bool vis[2][N];
+
+bool dfs(int u) {
+    vis[0][u]=true;
+    for(int i=0; i<n; i++) {
+        if(vis[1][i]) continue; 
+        int tmp=label[0][u]+label[1][i]-w[u][i];
+        if(tmp==0) {
+            vis[1][i]=true;
+            if(match[1][i]==-1||dfs(match[1][i])) {
+                match[0][u]=i;
+                match[1][i]=u;
+                return true;
+            }
+        } else if(tmp<slack[i]) {
+            slack[i]=tmp;
+        }
+    }
+    return false;
+}
+
+int KM() {
+    memset(match, -1, sizeof match);
+    memset(label[1], 0, sizeof label[1]);
+    for(int i=0; i<n; i++)
+    {
+        label[0][i]=-INF;
+        for(int j=0; j<n; j++)
+            label[0][i]=max(label[0][i], w[i][j]);
+    }
+    for(int i=0; i<n; i++) {
+        memset(slack, 0x3f, sizeof slack);
+        while(memset(vis, false, sizeof vis), !dfs(i)) {
+            int d=INF;
+            for(int j=0; j<n; j++)
+                if(!vis[1][j]) d=min(d, slack[j]);
+            for(int j=0; j<n; j++)
+                if(vis[0][j]) label[0][j]-=d;
+            for(int j=0; j<n; j++)
+                if(vis[1][j]) label[1][j]+=d;
+                else slack[j]-=d;
+        }
+    }
+    int ans=0;
+    for(int i=0; i<n; i++)
+        if(match[0][i]!=-1)
+            ans+=w[i][match[0][i]];
+    return ans;
+}
