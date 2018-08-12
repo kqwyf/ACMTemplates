@@ -14,7 +14,7 @@ bool bfs() {
 		int u=q.front();
 		q.pop();
 		if(dis[u]>maxdis) break;
-		for(int t=head[u]; t!=-1; t=adj[t]) {
+		for(int t=head[u]; t!=-1; t=nxt[t]) {
 			int v=to[t];
 			if(dis[v]!=-1) continue;
 			dis[v]=dis[u]+1;
@@ -32,7 +32,7 @@ bool bfs() {
 
 bool vis[N];
 bool dfs(int u) {
-	for(int t=head[u]; t!=-1; t=adj[t]) {
+	for(int t=head[u]; t!=-1; t=nxt[t]) {
 		int v=to[t];
 		if(vis[v]||dis[v]!=dis[u]+1) continue;
 		vis[v]=true;
