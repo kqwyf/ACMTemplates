@@ -38,3 +38,47 @@ int ISAP(int s, int t) {
     }
     return ans;
 }
+
+//Max Flow, Minimum Cost O(mnF)
+int pre[N], dis[N];
+bool vis[N];
+bool spfa(int s, int t) {
+    memset(pre, -1, sizeof pre);
+    memset(vis, false ,sizeof vis);
+    memset(dis, 0x3f, sizeof dis);
+    queue<int> q;
+    q.push(s);
+    vis[s]=true;
+    pre[s]=-1;
+    dis[s]=0;
+    while(!q.empty()) {
+        int u=q.front();
+        q.pop();
+        vis[u]=false;
+        for(int e=head[u]; e!=-1; e=nxt[e]) {
+            int v=to[e];
+            if(c[e]&&dis[v]>dis[u]+w[e]) {
+                dis[v]=dis[u]+w[e];
+                pre[v]=e;
+                if(!vis[v]) {
+                    q.push(v);
+                    vis[v]=true;
+                }
+            }
+        }
+    }
+    return pre[t]!=-1;
+}
+int MCMF(int s, int t) {
+    int ans=0;
+    while(spfa(s, t)) {
+        int f=INF;
+        for(int e=pre[t]; e!=-1; e=pre[to[e^1]])
+            f=min(f, c[e]);
+        for(int e=pre[t]; e!=-1; e=pre[to[e^1]]) {
+            c[e]-=f; c[e^1]+=f;
+            ans+=f*w[e];
+        }
+    }
+    return ans;
+}
