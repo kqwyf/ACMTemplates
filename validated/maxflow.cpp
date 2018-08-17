@@ -39,7 +39,7 @@ int ISAP(int s, int t) {
     return ans;
 }
 
-//Max Flow, Minimum Cost O(mnF)
+//Minimum Cost Max Flow O(mnF)
 int pre[N], dis[N];
 bool vis[N];
 bool spfa(int s, int t) {
